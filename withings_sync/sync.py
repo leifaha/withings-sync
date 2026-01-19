@@ -525,7 +525,10 @@ def sync():
     )
 
     height = withings.get_height()
+    logging.info("Height from Withings: %s", height)
     groups = withings.get_measurements(startdate=startdate, enddate=enddate)
+    logging.info("Groups received from Withings: %s", groups)
+    logging.info("Number of groups: %s", len(groups) if groups else 0)
 
     # Only upload if there are measurement returned
     if groups is None or len(groups) == 0:
@@ -620,6 +623,13 @@ def main():
     )
     logging.debug("withings-sync script version %s", version("withings-sync"))
     logging.debug("Script invoked with the following arguments: %s", ARGS)
+    
+    # Log credentials being used (mask passwords)
+    if ARGS.garmin_username:
+        logging.debug("Garmin username loaded: %s", ARGS.garmin_username)
+        logging.debug("Garmin password loaded: %s", "*" * len(ARGS.garmin_password) if ARGS.garmin_password else "None")
+    if ARGS.trainerroad_username:
+        logging.debug("TrainerRoad username loaded: %s", ARGS.trainerroad_username)
 
     if sys.version_info < (3, 12):
         print("Sorry, requires at least Python3.12.")
