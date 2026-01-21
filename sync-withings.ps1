@@ -8,7 +8,7 @@ $thirtyDaysAgo = (Get-Date).AddDays(-30).ToString('yyyy-MM-dd')
 $logFile = "C:\Repos\withings-sync\sync_log_$(Get-Date -Format 'yyyyMMdd_HHmmss').txt"
 
 # Run the sync with 30-day window and capture output
-$output = & "C:\Repos\withings-sync\.venv\Scripts\python.exe" -m withings_sync.sync --fromdate $thirtyDaysAgo --verbose 2>&1
+$output = & "C:\Repos\withings-sync\.venv\Scripts\python.exe" -m withings_sync.sync --fromdate $thirtyDaysAgo --verbose --config-folder "C:\Repos\withings-sync" 2>&1
 
 # Write output to log file
 $output | Out-File -FilePath $logFile -Encoding UTF8

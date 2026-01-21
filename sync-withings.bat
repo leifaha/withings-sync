@@ -14,7 +14,7 @@ REM Run the sync and log output
 echo Withings Sync started at %date% %time% >> "%logFile%"
 echo From date: %thirtyDaysAgo% >> "%logFile%"
 
-"C:\Repos\withings-sync\.venv\Scripts\python.exe" -m withings_sync.sync --fromdate %thirtyDaysAgo% --verbose >> "%logFile%" 2>&1
+"C:\Repos\withings-sync\.venv\Scripts\python.exe" -m withings_sync.sync --fromdate %thirtyDaysAgo% --verbose --config-folder "C:\Repos\withings-sync" >> "%logFile%" 2>&1
 
 echo Withings Sync completed at %date% %time% >> "%logFile%"
 echo Exit code: %ERRORLEVEL% >> "%logFile%"
