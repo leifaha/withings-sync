@@ -166,17 +166,11 @@ class WithingsOAuth2:
         body = resp.get("body")
 
         if status != 0:
-            log.error("Received error code: %d", status)
-            log.error(
-                "Check here for an interpretation of this error: "
-                "http://developer.withings.com/api-reference#section/Response-status"
+            raise WithingsException(
+                f"Failed to get access token (status {status}). "
+                "See http://developer.withings.com/api-reference#section/Response-status "
+                "for details. If the code is invalid, re-run the script to obtain a new link."
             )
-            log.error("")
-            log.error(
-                "If it's regarding an invalid code, try to start the"
-                " script again to obtain a new link."
-            )
-            raise
 
         self.user_config["access_token"] = body.get("access_token")
         self.user_config["refresh_token"] = body.get("refresh_token")
@@ -201,15 +195,10 @@ class WithingsOAuth2:
         body = resp.get("body")
 
         if status != 0:
-            log.error("Received error code: %d", status)
-            log.error(
-                "Check here for an interpretation of this error: "
-                "http://developer.withings.com/api-reference#section/Response-status"
-            )
-            log.error("")
-            log.error(
-                "If it's regarding an invalid code, try to start the"
-                " script again to obtain a new link."
+            raise WithingsException(
+                f"Failed to refresh access token (status {status}). "
+                "See http://developer.withings.com/api-reference#section/Response-status "
+                "for details. Your refresh token may have expired — re-authenticate via the browser."
             )
 
         self.user_config["access_token"] = body.get("access_token")

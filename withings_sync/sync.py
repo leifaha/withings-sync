@@ -16,9 +16,10 @@ from withings_sync.trainerroad import TrainerRoad
 from withings_sync.fit import FitEncoderWeight, FitEncoderBloodPressure
 
 # Load the environment variables from a .env (dotenv) file.
-# This is done prior to importing other modules such that all variables,
-# also the ones accessed in those modules, can be set in the dotenv file.
-dotenv.load_dotenv()
+# Use an explicit path relative to this file so it works regardless of CWD
+# (e.g. when invoked via Task Scheduler with a different working directory).
+_ENV_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), ".env")
+dotenv.load_dotenv(_ENV_PATH)
 
 
 def load_variable(env_var, secrets_file):
@@ -635,4 +636,14 @@ def main():
         print("Sorry, requires at least Python3.12.")
         sys.exit(1)
 
-    sync()
+    try:
+        result = sync()
+        logging.info("Sync finished with result: %s", result)
+        sys.exit(result if result else 0)
+    except Exception as e:
+        logging.error("Sync failed with exception: %s", e, exc_info=True)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()
