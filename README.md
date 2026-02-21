@@ -1,16 +1,15 @@
-> [!CAUTION]
-> This Release introduces breaking changes that users need to be aware of before upgrading or using it.
-> These changes were made to enhance security and compatibility but may require modifications to your existing setup.
->
-> - The container now runs without root privileges.
-> - Dependencies, virtual envs, packaging is now done by Poetry.
-> - This fork requires a recent version of Python, currently capped at >= python 3.12.
->
-> Make sure to go over the updated readme and test these new changes thoroughly for your environment.
-> Chances are quite high you will have to make changes to make this work again. 
+
 
 # withings-sync
+## QUICKSTART/Manual run:
+Sometimes the trigger doesn't work properly, or theres a bug with the API. This can be identified by the latest sync log showing no returns when trying to get data, e.g. "root - INFO - Height from Withings: None" (and similar for "measurements").
 
+To trigger manually, which normally fixes this:
+1. Open a powershell terminal
+2. Run "```.\sync-withings.bat```"
+3. Check the sync log, did it retrieve and write data? You should see it retrieving the height, along with groups of measurements (weight).
+
+## Description:
 A tool for synchronisation of the Withings API to:
 
 - Garmin Connect
