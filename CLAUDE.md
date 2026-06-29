@@ -6,20 +6,35 @@
 Syncs body-composition measurements from a Withings scale to Garmin Connect (and optionally TrainerRoad). The flow is: Withings API → parse measurements → encode as FIT file → upload to Garmin.
 
 ## How to run
-```bat
-REM Scheduled task entry point (the only one needed on Windows):
-sync-withings.bat
 
-REM Or manually from the venv:
+### macOS (current host — automated via launchd)
+```bash
+# On-demand run (same as the scheduled job):
+./sync-withings.sh
+launchctl start com.leif.withings-sync     # alternative on-demand trigger
+
+# First-time / re-auth (interactive — needed to paste Withings token & handle Garmin MFA):
+poetry run python -m withings_sync.sync --config-folder "$PWD" --verbose
+```
+- Daily run: LaunchAgent `com.leif.withings-sync` fires at **07:00**.
+  Plist: `~/Library/LaunchAgents/com.leif.withings-sync.plist`. Entry point: `sync-withings.sh`.
+- Manage: `launchctl bootout|bootstrap gui/$(id -u) <plist>` to reload after editing; `launchctl print gui/$(id -u)/com.leif.withings-sync` to inspect.
+- Python env: poetry venv on Homebrew **python@3.12** at
+  `/Users/leif/Library/Caches/pypoetry/virtualenvs/withings-sync-es5I6D5q-py3.12` (hardcoded in `sync-withings.sh` — update if poetry recreates the env).
+
+### Windows (legacy)
+```bat
+sync-withings.bat
 .venv\Scripts\python.exe -m withings_sync.sync --fromdate 2026-01-01 --verbose --config-folder "C:\Repos\withings-sync"
 ```
-Logs land in `sync_log_YYYYMMDD_HHmmss.txt` at the repo root. Older logs are in `old_logs/`.
+Logs land in `logs/sync_log_YYYYMMDD_HHmmss.txt`. launchd stdout/stderr → `logs/launchd_stdout.log` / `logs/launchd_stderr.log`. The whole `logs/` dir is gitignored.
 
 ## Key architecture
 - `withings_sync/sync.py` — orchestrator and CLI entry point. `ARGS` is parsed at module level; `main()` is the actual entry point (called via `if __name__ == "__main__"` or the poetry script entry point).
 - `withings_sync/withings2.py` — Withings OAuth2 + measurement API. Tokens are stored in `.withings_user.json` and refreshed on every run.
 - `withings_sync/garmin.py` — thin wrapper around the `garth` library. Session is persisted in `.garmin_session/` for token reuse.
 - `withings_sync/fit.py` — binary FIT file encoder (weight + blood pressure).
+- `sync-withings.sh` — macOS launchd entry point. BSD `date -v-30d` for the 30-day window; timestamped logging; exit codes. Mirrors the bat file.
 - `sync-withings.bat` — the Windows Task Scheduler entry point. Handles logging, timestamps, and exit codes.
 
 ## Credentials and config

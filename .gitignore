@@ -5,3 +5,5 @@ dist/
 *.json
 .env
 sync_log_*
+logs/
+.garmin_session/
